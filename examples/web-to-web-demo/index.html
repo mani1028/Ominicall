@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OmniCall Debug Terminal</title>
+    <style>
+        .hidden { display: none !important; }
+        #incomingUI { 
+            background: #fff3cd; 
+            border: 2px solid #ffeeba; 
+            padding: 20px; 
+            margin: 20px 0; 
+            border-radius: 5px;
+        }
+        button { padding: 10px; cursor: pointer; margin: 5px; }
+        .btn-red { background: #ff4d4d; color: white; border: none; }
+        .btn-green { background: #28a745; color: white; border: none; }
+    </style>
+</head>
+<body>
+    <h2>OmniCall Terminal</h2>
+    
+    <div>
+        <input type="text" id="myId" placeholder="Your Name">
+        <button id="btnConnect" class="btn-green">Connect</button>
+    </div>
+
+    <hr>
+
+    <div id="dialer">
+        <input type="text" id="targetId" placeholder="Call Who?">
+        <button id="btnCall">Start Call</button>
+    </div>
+
+    <div id="incomingUI" class="hidden">
+        <h3 id="callerName"></h3>
+        <button id="btnAccept" class="btn-green">Accept Call</button>
+        <button id="btnReject" class="btn-red">Reject</button>
+    </div>
+
+    <div id="activeCallUI" class="hidden">
+        <h3 id="statusText">In Call...</h3>
+        <button id="btnHangup" class="btn-red">End Call</button>
+    </div>
+
+    <script type="module">
+        import { OmniCall } from '../../sdk_core/web/core.js';
+
+        let callClient;
+        let currentPeer;
+
+        const ui = {
+            incoming: document.getElementById('incomingUI'),
+            active: document.getElementById('activeCallUI'),
+            callerText: document.getElementById('callerName'),
+            statusText: document.getElementById('statusText')
+        };
+
+        document.getElementById('btnConnect').onclick = async () => {
+            const myId = document.getElementById('myId').value;
+            
+            callClient = new OmniCall(myId, {
+                onIncoming: (sender) => {
+                    currentPeer = sender;
+                    ui.callerText.innerText = `Incoming call from: ${sender}`;
+                    ui.incoming.classList.remove('hidden');
+                },
+                onAccepted: () => {
+                    ui.statusText.innerText = `Talking to ${currentPeer}`;
+                },
+                onRejected: () => {
+                    alert("Call Rejected");
+                    location.reload();
+                },
+                onHangup: () => {
+                    alert("Call Ended");
+                    location.reload();
+                }
+            });
+
+            await callClient.connect();
+            alert("Connected!");
+        };
+
+        document.getElementById('btnCall').onclick = async () => {
+            currentPeer = document.getElementById('targetId').value;
+            ui.active.classList.remove('hidden');
+            ui.statusText.innerText = `Calling ${currentPeer}...`;
+            await callClient.startCall(currentPeer);
+        };
+
+        document.getElementById('btnAccept').onclick = async () => {
+            ui.incoming.classList.add('hidden');
+            ui.active.classList.remove('hidden');
+            await callClient.acceptCall();
+        };
+
+        document.getElementById('btnReject').onclick = () => {
+            callClient.rejectCall();
+            ui.incoming.classList.add('hidden');
+        };
+
+        document.getElementById('btnHangup').onclick = () => {
+            callClient.hangup();
+        };
+    </script>
+</body>
+</html>

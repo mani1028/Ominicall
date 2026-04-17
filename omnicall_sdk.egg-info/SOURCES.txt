@@ -1,0 +1,9 @@
+setup.py
+examples/__init__.py
+examples/app-to-app-demo/__init__.py
+examples/app-to-app-demo/main.py
+omnicall_sdk.egg-info/PKG-INFO
+omnicall_sdk.egg-info/SOURCES.txt
+omnicall_sdk.egg-info/dependency_links.txt
+omnicall_sdk.egg-info/requires.txt
+omnicall_sdk.egg-info/top_level.txt

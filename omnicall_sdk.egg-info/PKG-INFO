@@ -1,0 +1,6 @@
+Metadata-Version: 2.1
+Name: omnicall-sdk
+Version: 0.1.0
+Summary: A headless WebRTC SDK for Python-to-Browser communication
+Author: Vamshidhar Reddy
+Requires-Python: >=3.8
