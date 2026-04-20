@@ -1,0 +1,3 @@
+recursive-include sdk_core/web *
+recursive-include sdk_core *.js
+include sdk_core/web/core.js
