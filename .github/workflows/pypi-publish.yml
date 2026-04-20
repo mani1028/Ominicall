@@ -3,7 +3,7 @@ name: Publish Ominicall to PyPI
 on:
   push:
     tags:
-      - 'v*' # Triggers when you push a tag like v0.1.0
+      - 'v*'
 
 jobs:
   build-n-publish:
@@ -22,12 +22,16 @@ jobs:
         python -m pip install --upgrade pip
         pip install build twine
 
-    - name: Build binary wheel and source tarball
-      run: python -m build
+    - name: Clean and Build
+      # Added 'rm -rf dist/' to ensure we never upload old versions
+      run: |
+        rm -rf dist/
+        python -m build
 
     - name: Publish to PyPI
       env:
         TWINE_USERNAME: __token__
         TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
       run: |
-        python -m twine upload dist/*
+        # Use --skip-existing as a safety net
+        python -m twine upload --skip-existing dist/*
